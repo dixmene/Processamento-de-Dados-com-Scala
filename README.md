@@ -1,12 +1,12 @@
-## Projeto: Processamento de Dados com Scala
+## Projeto: Processamento de Dados com Scala e Apache Spark
 
 ### Objetivo do Projeto
 
-O objetivo deste projeto é demonstrar a capacidade de processar e analisar dados de um arquivo CSV usando a linguagem de programação Scala. O arquivo CSV utilizado, `BD_Pesquisa_Letramento_Financeiro_dados_abertos.csv`, contém informações sobre pesquisas de letramento financeiro e está estruturado para permitir a realização de análises significativas. Este projeto visa aplicar técnicas de filtragem e agregação para extrair insights relevantes dos dados.
+O objetivo deste projeto é demonstrar a capacidade de processar e analisar dados de um arquivo CSV utilizando a linguagem de programação Scala em conjunto com o Apache Spark. O arquivo CSV utilizado, `BD_Pesquisa_Letramento_Financeiro_dados_abertos.csv`, contém dados relacionados a pesquisas sobre letramento financeiro. O projeto visa aplicar técnicas avançadas de filtragem e agregação para extrair e interpretar informações significativas a partir desses dados.
 
 ### Por que usamos Scala e Spark?
 
-**Scala** foi escolhida por ser uma linguagem moderna que se integra perfeitamente com o **Apache Spark**, uma poderosa ferramenta para processamento de grandes volumes de dados. O Spark é conhecido por sua capacidade de realizar análises rápidas e eficientes, e sua integração com Scala torna o desenvolvimento de projetos de processamento de dados mais fluido e direto.
+**Scala** foi escolhida por ser uma linguagem moderna e funcional, que oferece uma integração natural com o **Apache Spark**. O Spark é uma ferramenta altamente eficiente para processamento de grandes volumes de dados e análise em larga escala. Juntos, Scala e Spark proporcionam um ambiente robusto e de alto desempenho para trabalhar com big data, permitindo o processamento paralelo e rápido de grandes conjuntos de dados.
 
 ### Estrutura do Projeto
 
@@ -17,8 +17,8 @@ O objetivo deste projeto é demonstrar a capacidade de processar e analisar dado
      .master("local[*]")
      .getOrCreate()
    ```
-   - **Objetivo**: Criar uma instância do Spark que permite a leitura e processamento dos dados.
-   - **Explicação**: O `SparkSession` é o ponto de entrada para usar o Spark. O método `.master("local[*]")` indica que o Spark deve usar todos os núcleos da CPU disponíveis no ambiente local para processamento.
+   - **Objetivo**: Estabelecer uma conexão com o Spark para permitir a leitura e o processamento dos dados.
+   - **Explicação**: O `SparkSession` é a principal entrada para interagir com o Spark. A configuração `.master("local[*]")` indica que o processamento deve usar todos os núcleos da CPU disponíveis localmente, o que é ideal para desenvolvimento e testes.
 
 2. **Carregamento do Arquivo CSV**:
    ```scala
@@ -28,22 +28,22 @@ O objetivo deste projeto é demonstrar a capacidade de processar e analisar dado
      .option("delimiter", ";")
      .csv(filePath)
    ```
-   - **Objetivo**: Ler os dados do arquivo CSV para uma estrutura que o Spark pode processar.
-   - **Explicação**: O arquivo CSV é carregado em um DataFrame (`df`), que é uma estrutura de dados semelhante a uma tabela de banco de dados. A opção `header=true` indica que a primeira linha do arquivo contém os nomes das colunas, e `delimiter=";"` especifica que o separador de colunas é o ponto e vírgula.
+   - **Objetivo**: Importar os dados do arquivo CSV para um DataFrame, que é a estrutura de dados do Spark para manipulação de tabelas.
+   - **Explicação**: O DataFrame `df` é carregado com cabeçalhos e usa o ponto e vírgula como delimitador, correspondendo ao formato do arquivo CSV.
 
 3. **Exibição dos Primeiros Registros**:
    ```scala
    df.show(5)
    ```
-   - **Objetivo**: Verificar as primeiras linhas dos dados carregados para garantir que foram lidos corretamente.
-   - **Explicação**: O método `show(5)` exibe as primeiras cinco linhas do DataFrame, facilitando a verificação inicial dos dados.
+   - **Objetivo**: Verificar a integridade e o formato dos dados carregados.
+   - **Explicação**: O método `show(5)` exibe as primeiras cinco linhas, permitindo uma revisão rápida dos dados para assegurar que foram lidos corretamente.
 
 4. **Filtragem dos Dados**:
    ```scala
    val filteredDf = df.filter(col("Q_UF") === "13")
    ```
-   - **Objetivo**: Filtrar os dados para incluir apenas aqueles que atendem a um critério específico.
-   - **Explicação**: O filtro seleciona apenas as linhas onde a coluna `Q_UF` tem o valor "13". Isso é útil para focar em um subconjunto relevante dos dados.
+   - **Objetivo**: Selecionar apenas os dados que atendem a um critério específico.
+   - **Explicação**: A filtragem é feita para extrair apenas os registros onde a coluna `Q_UF` é igual a "13", focando em um subconjunto relevante dos dados.
 
 5. **Agregação dos Dados**:
    ```scala
@@ -53,15 +53,15 @@ O objetivo deste projeto é demonstrar a capacidade de processar e analisar dado
        avg("QD3").as("avg_qd3")
      )
    ```
-   - **Objetivo**: Agregar e resumir os dados filtrados para análise.
-   - **Explicação**: Os dados filtrados são agrupados pela coluna `Q_Regiao`. Em seguida, é calculada a contagem de setores (`count_setor`) e a média de `QD3` para cada região. Isso fornece uma visão consolidada dos dados.
+   - **Objetivo**: Resumir e consolidar os dados filtrados para análise.
+   - **Explicação**: Os dados são agrupados pela coluna `Q_Regiao`. Em seguida, calculam-se a contagem de setores e a média dos valores de `QD3` para cada região, proporcionando uma visão consolidada.
 
 6. **Exibição dos Dados Agregados**:
    ```scala
    aggregatedDf.show(5)
    ```
-   - **Objetivo**: Visualizar os resultados da agregação.
-   - **Explicação**: Similar à exibição inicial, mas agora para os dados agregados, mostrando as primeiras cinco linhas do resultado.
+   - **Objetivo**: Visualizar os resultados da agregação para análise.
+   - **Explicação**: Similar à visualização inicial, mas agora focada nos resultados agregados, ajudando a verificar e interpretar os dados consolidados.
 
 7. **Salvamento dos Resultados**:
    ```scala
@@ -69,16 +69,16 @@ O objetivo deste projeto é demonstrar a capacidade de processar e analisar dado
      .option("header", "true")
      .csv("caminho/para/salvar/resultado.csv")
    ```
-   - **Objetivo**: Salvar os dados agregados em um novo arquivo CSV.
-   - **Explicação**: O DataFrame com os dados agregados é escrito em um novo arquivo CSV, incluindo os cabeçalhos das colunas.
+   - **Objetivo**: Exportar os dados processados e agregados para um novo arquivo CSV.
+   - **Explicação**: O DataFrame com os resultados agregados é salvo em um arquivo CSV, mantendo os cabeçalhos das colunas para posterior análise.
 
 8. **Encerramento do SparkSession**:
    ```scala
    spark.stop()
    ```
-   - **Objetivo**: Finalizar a sessão Spark para liberar recursos.
-   - **Explicação**: É uma prática importante parar o SparkSession após o término das operações para liberar recursos do sistema.
+   - **Objetivo**: Finalizar a sessão do Spark para liberar recursos do sistema.
+   - **Explicação**: Encerrar a sessão do Spark é uma prática importante para liberar os recursos do sistema após a conclusão do processamento.
 
 ### Conclusão
 
-Este projeto demonstra o uso de Scala e Apache Spark para processar e analisar dados de um arquivo CSV. As etapas incluem a leitura do arquivo, filtragem, agregação e salvamento dos dados. A escolha de Scala e Spark permite a realização eficiente dessas operações, e o projeto destaca habilidades em processamento de dados e análise usando ferramentas modernas.
+Este projeto demonstra a utilização de Scala e Apache Spark para o processamento e análise de grandes volumes de dados a partir de um arquivo CSV. Ele abrange desde a configuração inicial do ambiente Spark até a exportação dos resultados processados, destacando a eficácia dessas ferramentas na manipulação e análise de big data.
